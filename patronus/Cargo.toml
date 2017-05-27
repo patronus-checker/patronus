@@ -1,0 +1,8 @@
+[package]
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+name = "patronus"
+version = "0.1.0"
+
+[dependencies]
+libloading = "0.4"
+patronus-provider = {path = "../patronus-provider"}

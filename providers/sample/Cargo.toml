@@ -1,0 +1,10 @@
+[package]
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+name = "patronus-sample"
+version = "0.1.0"
+
+[dependencies]
+patronus-provider = { path = "../../patronus-provider" }
+
+[lib]
+crate-type = ["cdylib"]

@@ -1,0 +1,13 @@
+[package]
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+name = "patronus-languagetool"
+version = "0.1.0"
+
+[dependencies]
+config = "0.4"
+languagetool = "0.1"
+patronus-provider = {path = "../../patronus-provider"}
+xdg = "2.1"
+
+[lib]
+crate-type = ["cdylib"]

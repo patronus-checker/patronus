@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "patronus",
+    "patronus-capi",
+    "patronus-provider",
+    "providers/enchant",
+    "providers/languagetool",
+    "providers/sample",
+]

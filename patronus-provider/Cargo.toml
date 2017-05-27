@@ -1,0 +1,4 @@
+[package]
+name = "patronus-provider"
+version = "0.1.0"
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]

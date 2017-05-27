@@ -1,0 +1,4 @@
+extra/patronus/patronus.h
+extra/patronus.pc
+examples/check
+examples/libpatronus.so

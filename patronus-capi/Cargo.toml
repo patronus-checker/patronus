@@ -1,0 +1,15 @@
+[package]
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+build = "build.rs"
+name = "patronus-capi"
+version = "0.1.0"
+
+[dependencies]
+patronus = {path = "../patronus"}
+patronus-provider = {path = "../patronus-provider"}
+
+[build-dependencies]
+rusty-cheddar = "0.3"
+
+[lib]
+crate-type = ["cdylib"]
