@@ -84,6 +84,12 @@ unsafe extern "C" fn free_annotations(ptr: *mut AnnotationArray) {
     }
 }
 
+unsafe extern "C" fn free_provider(ptr: *mut Provider) {
+    assert!(!ptr.is_null(), "Trying to clean a NULL value");
+    let provider = Box::from_raw(ptr);
+    Box::from_raw(provider.data as *mut LanguageTool);
+}
+
 #[no_mangle]
 pub extern "C" fn patronus_provider_init() -> *mut Provider {
     let mut c = config::Config::new();
@@ -112,15 +118,9 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
                                        name: get_name,
                                        check: check_text,
                                        free_annotations: free_annotations,
+                                       free_provider: free_provider,
                                        data: lt as *mut c_void,
                                    }))
         }
     }
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn patronus_provider_free(ptr: *mut Provider) {
-    assert!(!ptr.is_null(), "Trying to clean a NULL value");
-    let provider = Box::from_raw(ptr);
-    Box::from_raw(provider.data as *mut LanguageTool);
 }

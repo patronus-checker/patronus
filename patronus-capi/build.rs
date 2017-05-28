@@ -16,15 +16,14 @@ fn main() {
     let mut data = String::new();
     file.read_to_string(&mut data)
         .expect("Cannot read header file.");
-    let data = data.replace("AnnotationKind", "PatronusAnnotationKind")
-        .replace("SuggestionPtr", "PatronusSuggestionPtr")
-        .replace("AnnotationPtr", "PatronusAnnotationPtr")
-        .replace("AnnotationArray", "PatronusAnnotationArray")
-        .replace("SuggestionArray", "PatronusSuggestionArray")
-        .replace("Properties", "PatronusProperties")
-        .replace("struct Annotation", "struct PatronusAnnotation")
-        .replace("} Annotation", "} PatronusAnnotation")
-        .replace("struct Suggestion", "struct PatronusSuggestion");
+    let data = data.replace("Spelling =", "AnnotationKindSpelling =")
+        .replace("Grammar =", "AnnotationKindGrammar =")
+        .replace("Style =", "AnnotationKindStyle =")
+        .replace("Typography =", "AnnotationKindTypography =")
+        .replace("Suggestion =", "AnnotationKindSuggestion =")
+        .replace("Annotation", "PatronusAnnotation")
+        .replace("Suggestion", "PatronusSuggestion")
+        .replace("Properties", "PatronusProperties");
     let mut file = File::create(GENERATED_HEADER_FILE)
         .expect("Cannot open header file for writing.");
     file.write_all(data.as_bytes())

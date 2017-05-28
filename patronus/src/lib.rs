@@ -29,7 +29,6 @@ pub struct Annotation {
 
 const PROVIDER_VERSION_FUNCTION: &[u8] = b"patronus_provider_version\0";
 const PROVIDER_INIT_FUNCTION: &[u8] = b"patronus_provider_init\0";
-const PROVIDER_FREE_FUNCTION: &[u8] = b"patronus_provider_free\0";
 
 /// Provider wrapper.
 /// Keeps the associated dynamically loaded library so it could be properly freed.
@@ -94,12 +93,9 @@ impl Provider {
 impl Drop for Provider {
     fn drop(&mut self) {
         unsafe {
-            let library = Box::from_raw(self.library);
-            let free: lib::Symbol<unsafe extern "C" fn(*mut provider::Provider)> =
-                library
-                    .get(PROVIDER_FREE_FUNCTION)
-                    .expect("missing clean-up function");
-            free(self.internal)
+            ((*self.internal).free_provider)(self.internal);
+
+            Box::from_raw(self.library);
         }
     }
 }
@@ -151,7 +147,6 @@ impl Patronus {
                         1 => {
                             let internal_provider = unsafe {
                                 let init_provider: lib::Symbol<unsafe extern "C" fn() -> *mut provider::Provider> = lib.get(PROVIDER_INIT_FUNCTION)?;
-                                let _: lib::Symbol<unsafe extern "C" fn(*mut provider::Provider)> = lib.get(PROVIDER_FREE_FUNCTION)?;
                                 init_provider()
                             };
                             result.push(Provider {

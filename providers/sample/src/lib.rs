@@ -3,7 +3,7 @@ extern crate patronus_provider;
 
 use patronus_provider::*;
 use std::borrow::Cow;
-use std::ffi::{CStr, CString};
+use std::ffi::CStr;
 use std::os::raw::{c_char, c_int, c_void};
 
 #[no_mangle]
@@ -60,11 +60,13 @@ unsafe extern "C" fn free_annotations(ptr: *mut AnnotationArray) {
     let anns = Box::from_raw(ptr);
     for i in 0..anns.len {
         let ann = &*anns.data.offset(i as isize);
-        let suggs = Box::from_raw(ann.suggestions);
-        for i in 0..suggs.len {
-            let sugg = *suggs.data.offset(i as isize);
-        }
+        Box::from_raw(ann.suggestions);
     }
+}
+
+unsafe extern "C" fn free_provider(ptr: *mut Provider) {
+    assert!(!ptr.is_null(), "Trying to clean a NULL value");
+    let _provider = Box::from_raw(ptr);
 }
 
 #[no_mangle]
@@ -73,14 +75,9 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
                                name: get_name,
                                check: check_text,
                                free_annotations: free_annotations,
+                               free_provider: free_provider,
                                data: std::ptr::null_mut(),
                            }))
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn patronus_provider_free(ptr: *mut Provider) {
-    assert!(!ptr.is_null(), "Trying to clean a NULL value");
-    let _provider = Box::from_raw(ptr);
 }
 
 #[test]

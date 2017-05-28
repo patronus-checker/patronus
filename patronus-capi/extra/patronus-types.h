@@ -1,3 +1,9 @@
+typedef struct Annotation Annotation;
+typedef struct Suggestion Suggestion;
+typedef struct AnnotationArray AnnotationArray;
+typedef struct SuggestionArray SuggestionArray;
+typedef struct Properties Properties;
+
 typedef enum AnnotationKind {
     Spelling = 1,
     Grammar = 2,
@@ -6,31 +12,28 @@ typedef enum AnnotationKind {
     Suggestion = 5,
 } AnnotationKind;
 
-typedef struct Annotation* AnnotationPtr;
-typedef struct Suggestion* SuggestionPtr;
-
-typedef struct AnnotationArray {
-    AnnotationPtr data;
+struct AnnotationArray {
+    Annotation* data;
     size_t len;
     void* extra;
-    void (*cleanup)(AnnotationPtr, size_t, void*);
-} AnnotationArray;
+    void (*cleanup)(Annotation*, size_t, void*);
+};
 
-typedef struct SuggestionArray {
+struct SuggestionArray {
     char const* const* data;
     size_t len;
     void* extra;
-    void (*cleanup)(SuggestionPtr, size_t, void*);
-} SuggestionArray;
+    void (*cleanup)(Suggestion*, size_t, void*);
+};
 
-typedef struct Annotation {
+struct Annotation {
     uintptr_t offset;
     uintptr_t length;
     char const* message;
     AnnotationKind kind;
     SuggestionArray* suggestions;
-} Annotation;
+};
 
-typedef struct Properties {
+struct Properties {
      char const* primary_language;
-} Properties;
+};

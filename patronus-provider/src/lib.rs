@@ -62,6 +62,7 @@ pub struct Provider {
                                     data: *mut std::os::raw::c_void)
                                     -> *mut AnnotationArray,
     pub free_annotations: unsafe extern "C" fn(*mut AnnotationArray),
+    pub free_provider: unsafe extern "C" fn(*mut Provider),
     pub data: *mut std::os::raw::c_void,
 }
 
