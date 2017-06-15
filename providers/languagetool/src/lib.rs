@@ -21,10 +21,11 @@ pub extern "C" fn get_name() -> *const c_char {
     static_cstr!("Language Tool")
 }
 
-extern "C" fn check_text(props: *const Properties,
-                         text: *const c_char,
-                         data: *mut c_void)
-                         -> *mut AnnotationArray {
+extern "C" fn check_text(
+    props: *const Properties,
+    text: *const c_char,
+    data: *mut c_void,
+) -> *mut AnnotationArray {
     let lt = unsafe { &mut *(data as *mut LanguageTool) };
 
     let lang = unsafe {
@@ -47,10 +48,10 @@ extern "C" fn check_text(props: *const Properties,
                         .into_iter()
                         .filter_map(|replacement| replacement.value)
                         .map(|sugg| {
-                                 CString::new(sugg)
-                                     .expect("cannot create C string")
-                                     .into_raw() as *const c_char
-                             })
+                            CString::new(sugg)
+                                .expect("cannot create C string")
+                                .into_raw() as *const c_char
+                        })
                         .collect();
                     let ann = Annotation {
                         offset: offset,
@@ -99,14 +100,16 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
         if let Some(path) = xdg_dirs.find_config_file("config.toml") {
             let user_config = config::File::new(&path.to_string_lossy(), config::FileFormat::Toml)
                 .required(false);
-            c.merge(user_config)
-                .expect("Cannot  merge LanguageTool provider configuration.");
+            c.merge(user_config).expect(
+                "Cannot  merge LanguageTool provider configuration.",
+            );
         }
     }
 
 
-    let instance_url = c.get_str(CONFIG_INSTANCE_URL)
-        .expect("Could not determine instance URL.");
+    let instance_url = c.get_str(CONFIG_INSTANCE_URL).expect(
+        "Could not determine instance URL.",
+    );
     match LanguageTool::new(&instance_url) {
         Err(msg) => {
             panic!("Cannot create Language Tool instance: {}", msg);
@@ -115,12 +118,12 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
             let lt: *mut LanguageTool = Box::into_raw(Box::new(lt));
 
             Box::into_raw(Box::new(Provider {
-                                       name: get_name,
-                                       check: check_text,
-                                       free_annotations: free_annotations,
-                                       free_provider: free_provider,
-                                       data: lt as *mut c_void,
-                                   }))
+                name: get_name,
+                check: check_text,
+                free_annotations: free_annotations,
+                free_provider: free_provider,
+                data: lt as *mut c_void,
+            }))
         }
     }
 }

@@ -26,10 +26,11 @@ pub unsafe extern "C" fn patronus_free(ptr: *mut Patronus) {
 /// Checks provided text for mistakes.
 /// The returned value should be cleaned using `patronus_free_annotations` after use.
 #[no_mangle]
-pub unsafe extern "C" fn patronus_check(ptr: *mut Patronus,
-                                        props: *const Properties,
-                                        text: *const std::os::raw::c_char)
-                                        -> *mut AnnotationArray {
+pub unsafe extern "C" fn patronus_check(
+    ptr: *mut Patronus,
+    props: *const Properties,
+    text: *const std::os::raw::c_char,
+) -> *mut AnnotationArray {
     assert!(!ptr.is_null(), "Trying to use a NULL pointer.");
     assert!(!props.is_null(), "Trying to use a NULL pointer.");
 
@@ -48,22 +49,22 @@ pub unsafe extern "C" fn patronus_check(ptr: *mut Patronus,
         .check(&properties, &CStr::from_ptr(text).to_string_lossy())
         .iter()
         .map(|&patronus::Annotation {
-                  offset,
-                  length,
-                  ref message,
-                  kind,
-                  ref suggestions,
-              }| {
+             offset,
+             length,
+             ref message,
+             kind,
+             ref suggestions,
+         }| {
             let msg = CString::new(message.clone())
                 .expect("cannot create C string")
                 .into_raw() as *const c_char;
             let suggestions: Vec<Suggestion> = suggestions
                 .into_iter()
                 .map(|sugg| {
-                         CString::new((*sugg).clone())
-                             .expect("cannot create C string")
-                             .into_raw() as *const c_char
-                     })
+                    CString::new((*sugg).clone())
+                        .expect("cannot create C string")
+                        .into_raw() as *const c_char
+                })
                 .collect();
             Annotation {
                 offset: offset,

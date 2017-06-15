@@ -14,8 +14,9 @@ fn main() {
     // Prefix the type names: https://github.com/Sean1708/rusty-cheddar/issues/43
     let mut file = File::open(GENERATED_HEADER_FILE).expect("Cannot  open header file.");
     let mut data = String::new();
-    file.read_to_string(&mut data)
-        .expect("Cannot read header file.");
+    file.read_to_string(&mut data).expect(
+        "Cannot read header file.",
+    );
     let data = data.replace("Spelling =", "AnnotationKindSpelling =")
         .replace("Grammar =", "AnnotationKindGrammar =")
         .replace("Style =", "AnnotationKindStyle =")
@@ -24,10 +25,11 @@ fn main() {
         .replace("Annotation", "PatronusAnnotation")
         .replace("Suggestion", "PatronusSuggestion")
         .replace("Properties", "PatronusProperties");
-    let mut file = File::create(GENERATED_HEADER_FILE)
-        .expect("Cannot open header file for writing.");
-    file.write_all(data.as_bytes())
-        .expect("Cannot write header file.");
+    let mut file =
+        File::create(GENERATED_HEADER_FILE).expect("Cannot open header file for writing.");
+    file.write_all(data.as_bytes()).expect(
+        "Cannot write header file.",
+    );
 
     let prefix = option_env!("BUILD_PREFIX").unwrap_or("/usr");
     let libdir = option_env!("BUILD_LIBDIR").unwrap_or("${prefix}/lib");
@@ -37,7 +39,8 @@ fn main() {
     let version = env!("CARGO_PKG_VERSION");
 
     // Create a pkgconfig file
-    let pkgconfig_contents = format!("prefix={}
+    let pkgconfig_contents = format!(
+        "prefix={}
 exec_prefix=${{prefix}}
 libdir={}
 includedir={}
@@ -48,13 +51,14 @@ Version: {}
 Libs: -L${{libdir}} -lpatronus
 Cflags: -I${{includedir}}/patronus
 ",
-                                     prefix,
-                                     libdir,
-                                     includedir,
-                                     description,
-                                     version);
+        prefix,
+        libdir,
+        includedir,
+        description,
+        version
+    );
     let mut pkgconfig = File::create("extra/patronus.pc").expect("Cannot create pkgconfig file.");
-    pkgconfig
-        .write(pkgconfig_contents.as_bytes())
-        .expect("Cannot write pkgconfig file.");
+    pkgconfig.write(pkgconfig_contents.as_bytes()).expect(
+        "Cannot write pkgconfig file.",
+    );
 }

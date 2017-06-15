@@ -20,9 +20,10 @@ fn check_text_english(text: Cow<str>) -> *mut AnnotationArray {
     let mistakes: Vec<Annotation> = text.match_indices("mistakes are good")
         .map(|(offset, text)| {
             let length = text.len() as usize;
-            let suggestions = vec![static_cstr!("mistakes are never good"),
-                                   static_cstr!("mistakes are bad")]
-                    .into();
+            let suggestions = vec![
+                static_cstr!("mistakes are never good"),
+                static_cstr!("mistakes are bad"),
+            ].into();
             Annotation {
                 offset: offset,
                 length: length,
@@ -35,20 +36,20 @@ fn check_text_english(text: Cow<str>) -> *mut AnnotationArray {
     Box::into_raw(Box::new(mistakes.into()))
 }
 
-extern "C" fn check_text(props: *const Properties,
-                         text: *const c_char,
-                         _data: *mut c_void)
-                         -> *mut AnnotationArray {
+extern "C" fn check_text(
+    props: *const Properties,
+    text: *const c_char,
+    _data: *mut c_void,
+) -> *mut AnnotationArray {
     let lang_code = unsafe {
         CStr::from_ptr((*props).primary_language)
             .to_string_lossy()
             .into_owned()
     };
     let text = unsafe { CStr::from_ptr(text).to_string_lossy() };
-    let lang = lang_code
-        .splitn(2, '_')
-        .nth(0)
-        .expect("not enough language code components");
+    let lang = lang_code.splitn(2, '_').nth(0).expect(
+        "not enough language code components",
+    );
 
     match lang {
         "en" => check_text_english(text),
@@ -72,12 +73,12 @@ unsafe extern "C" fn free_provider(ptr: *mut Provider) {
 #[no_mangle]
 pub extern "C" fn patronus_provider_init() -> *mut Provider {
     Box::into_raw(Box::new(Provider {
-                               name: get_name,
-                               check: check_text,
-                               free_annotations: free_annotations,
-                               free_provider: free_provider,
-                               data: std::ptr::null_mut(),
-                           }))
+        name: get_name,
+        check: check_text,
+        free_annotations: free_annotations,
+        free_provider: free_provider,
+        data: std::ptr::null_mut(),
+    }))
 }
 
 #[test]

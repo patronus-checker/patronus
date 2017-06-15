@@ -17,10 +17,11 @@ pub extern "C" fn get_name() -> *const c_char {
     static_cstr!("Enchant")
 }
 
-extern "C" fn check_text(props: *const Properties,
-                         text: *const c_char,
-                         data: *mut c_void)
-                         -> *mut AnnotationArray {
+extern "C" fn check_text(
+    props: *const Properties,
+    text: *const c_char,
+    data: *mut c_void,
+) -> *mut AnnotationArray {
     let broker = unsafe { &mut *(data as *mut Broker) };
 
     let lang = unsafe { CStr::from_ptr((*props).primary_language).to_string_lossy() };
@@ -38,10 +39,10 @@ extern "C" fn check_text(props: *const Properties,
                     let suggestions: Vec<Suggestion> = dict.suggest(word)
                         .into_iter()
                         .map(|sugg| {
-                                 CString::new(sugg)
-                                     .expect("cannot create C string")
-                                     .into_raw() as *const c_char
-                             })
+                            CString::new(sugg)
+                                .expect("cannot create C string")
+                                .into_raw() as *const c_char
+                        })
                         .collect();
                     let ann = Annotation {
                         offset: offset,
@@ -82,10 +83,10 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
     let broker: *mut Broker = Box::into_raw(Box::new(Broker::new()));
 
     Box::into_raw(Box::new(Provider {
-                               name: get_name,
-                               check: check_text,
-                               free_annotations: free_annotations,
-                               free_provider: free_provider,
-                               data: broker as *mut c_void,
-                           }))
+        name: get_name,
+        check: check_text,
+        free_annotations: free_annotations,
+        free_provider: free_provider,
+        data: broker as *mut c_void,
+    }))
 }
