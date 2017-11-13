@@ -9,7 +9,7 @@ patronus = {path = "../patronus"}
 patronus-provider = {path = "../patronus-provider"}
 
 [build-dependencies]
-rusty-cheddar = "0.3"
+moz-cheddar = "0.4"
 
 [lib]
 crate-type = ["cdylib"]
