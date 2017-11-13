@@ -4,7 +4,7 @@ name = "patronus-languagetool"
 version = "0.1.0"
 
 [dependencies]
-config = "0.4"
+config = "0.7"
 languagetool = "0.1"
 patronus-provider = {path = "../../patronus-provider"}
 xdg = "2.1"
