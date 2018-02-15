@@ -125,10 +125,10 @@ impl Patronus {
     }
 
     /// Traverses provider directory and tries to load all shared libraries.
-    /// The provider directory is set during compile time from `PROVIDER_LOCATION`
+    /// The provider directory is set during compile time from `PATRONUS_PROVIDER_DIR`
     /// environment variable.
     fn load_providers() -> io::Result<Vec<Provider>> {
-        let provider_location = Path::new(env!("PROVIDER_LOCATION"));
+        let provider_location = Path::new(env!("PATRONUS_PROVIDER_DIR"));
         let mut result = Vec::new();
         if provider_location.is_dir() {
             for entry in fs::read_dir(provider_location)? {

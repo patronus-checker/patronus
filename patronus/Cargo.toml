@@ -1,5 +1,6 @@
 [package]
 authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+build = "build.rs"
 name = "patronus"
 version = "0.1.0"
 

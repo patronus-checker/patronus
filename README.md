@@ -8,4 +8,4 @@ Patronus is library that unifies APIs of various grammar checkers to simplify th
 * `providers` – default providers
 
 ## Installation
-Before starting the build `PROVIDER_LOCATION` environment variable must be set to the path where providers will be looked up; on Linux it will probably be `/usr/lib/patronus`. This path will be compiled into the library.
+Before starting the build `PATRONUS_PROVIDER_DIR` environment variable should be set to the path where providers will be looked up; on Linux it will probably be `/usr/lib/patronus`. This path will be compiled into the library.
