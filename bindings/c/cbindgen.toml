@@ -1,0 +1,17 @@
+include_guard = "patronus_h"
+include_version = true
+language = "C"
+
+[parse]
+parse_deps = true
+
+[export.rename]
+"Annotation" = "PatronusAnnotation"
+"AnnotationArray" = "PatronusAnnotationArray"
+"AnnotationKind" = "PatronusAnnotationKind"
+"Suggestion" = "PatronusSuggestion"
+"SuggestionArray" = "PatronusSuggestionArray"
+"Properties" = "PatronusProperties"
+
+[enum]
+rename_variants = "QualifiedScreamingSnakeCase"

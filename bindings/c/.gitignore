@@ -1,0 +1,8 @@
+target/
+Cargo.lock
+
+# Built files
+checker
+libpatronus.so
+patronus/patronus.h
+patronus.pc

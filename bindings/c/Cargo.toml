@@ -1,0 +1,11 @@
+[package]
+authors = ["Jan Tojnar <jtojnar@gmail.com>"]
+name = "patronus-capi"
+version = "0.1.0"
+
+[dependencies]
+patronus = {path = "../../patronus"}
+patronus-provider = {path = "../../patronus-provider"}
+
+[lib]
+crate-type = ["cdylib"]
