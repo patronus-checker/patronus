@@ -36,7 +36,8 @@ extern "C" fn check_text(
             let length = word.len();
             if length > 0 {
                 if !dict.check(word).unwrap_or(true) {
-                    let suggestions: Vec<Suggestion> = dict.suggest(word)
+                    let suggestions: Vec<Suggestion> = dict
+                        .suggest(word)
                         .into_iter()
                         .map(|sugg| {
                             CString::new(sugg)

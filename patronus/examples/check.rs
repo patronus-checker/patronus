@@ -7,7 +7,9 @@ fn main() {
     let lang = "en";
 
     let checker = Patronus::new();
-    let properties = Properties { primary_language: String::from(lang) };
+    let properties = Properties {
+        primary_language: String::from(lang),
+    };
 
     for provider in &checker.providers {
         println!("{}", provider.name());

@@ -38,13 +38,18 @@ extern "C" fn check_text(
     let req = Request::new(text, lang);
 
     let anns = {
-        if let Ok(Response { matches: Some(matches), .. }) = lt.check(req) {
+        if let Ok(Response {
+            matches: Some(matches),
+            ..
+        }) = lt.check(req)
+        {
             matches
                 .into_iter()
                 .map(|mtch| {
                     let offset = mtch.offset as usize;
                     let length = mtch.length as usize;
-                    let suggestions: Vec<Suggestion> = mtch.replacements
+                    let suggestions: Vec<Suggestion> = mtch
+                        .replacements
                         .into_iter()
                         .filter_map(|replacement| replacement.value)
                         .map(|sugg| {
@@ -100,16 +105,14 @@ pub extern "C" fn patronus_provider_init() -> *mut Provider {
         if let Some(path) = xdg_dirs.find_config_file("config.toml") {
             let user_config = config::File::new(&path.to_string_lossy(), config::FileFormat::Toml)
                 .required(false);
-            c.merge(user_config).expect(
-                "Cannot  merge LanguageTool provider configuration.",
-            );
+            c.merge(user_config)
+                .expect("Cannot  merge LanguageTool provider configuration.");
         }
     }
 
-
-    let instance_url = c.get_str(CONFIG_INSTANCE_URL).expect(
-        "Could not determine instance URL.",
-    );
+    let instance_url = c
+        .get_str(CONFIG_INSTANCE_URL)
+        .expect("Could not determine instance URL.");
     match LanguageTool::new(&instance_url) {
         Err(msg) => {
             panic!("Cannot create Language Tool instance: {}", msg);

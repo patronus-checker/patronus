@@ -57,10 +57,11 @@ impl Drop for Response {
 #[repr(C)]
 pub struct Provider {
     pub name: unsafe extern "C" fn() -> *const std::os::raw::c_char,
-    pub check: unsafe extern "C" fn(props: *const Properties,
-                                    text: *const std::os::raw::c_char,
-                                    data: *mut std::os::raw::c_void)
-                                    -> *mut AnnotationArray,
+    pub check: unsafe extern "C" fn(
+        props: *const Properties,
+        text: *const std::os::raw::c_char,
+        data: *mut std::os::raw::c_void,
+    ) -> *mut AnnotationArray,
     pub free_annotations: unsafe extern "C" fn(*mut AnnotationArray),
     pub free_provider: unsafe extern "C" fn(*mut Provider),
     pub data: *mut std::os::raw::c_void,

@@ -2,6 +2,7 @@ extern crate libloading as lib;
 extern crate patronus_provider;
 
 use patronus_provider as provider;
+pub use patronus_provider::AnnotationKind;
 use std::borrow::Cow;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -9,7 +10,6 @@ use std::fs;
 use std::io;
 use std::os::raw::c_int;
 use std::path::Path;
-pub use patronus_provider::AnnotationKind;
 
 /// Represents a profile to be passed down to checkers.
 /// Currently only primary language is supported.
@@ -108,14 +108,18 @@ pub struct Patronus {
 impl Patronus {
     /// Initializes Patronus and loads the providers.
     pub fn new() -> Self {
-        Self { providers: Self::load_providers().expect("cannot load providers") }
+        Self {
+            providers: Self::load_providers().expect("cannot load providers"),
+        }
     }
 
     /// Checks a text for mistakes using all loaded providers.
     pub fn check(&self, props: &Properties, text: &Cow<str>) -> Vec<Annotation> {
         let primary_language =
             CString::new(&*props.primary_language).expect("Cannot create language C String");
-        let properties = provider::Properties { primary_language: primary_language.as_ptr() };
+        let properties = provider::Properties {
+            primary_language: primary_language.as_ptr(),
+        };
 
         let mut res = Vec::new();
         for provider in &self.providers {
@@ -136,8 +140,9 @@ impl Patronus {
                 if path.is_file() && path.is_dylib() {
                     let lib = Box::new(lib::Library::new(&path)?);
                     let version = unsafe {
-                        match lib.get(PROVIDER_VERSION_FUNCTION) as
-                            lib::Result<lib::Symbol<unsafe extern "C" fn() -> c_int>> {
+                        match lib.get(PROVIDER_VERSION_FUNCTION)
+                            as lib::Result<lib::Symbol<unsafe extern "C" fn() -> c_int>>
+                        {
                             Ok(get_version) => get_version(),
                             Err(_) => continue,
                         }
@@ -145,7 +150,9 @@ impl Patronus {
                     match version {
                         1 => {
                             let internal_provider = unsafe {
-                                let init_provider: lib::Symbol<unsafe extern "C" fn() -> *mut provider::Provider> = lib.get(PROVIDER_INIT_FUNCTION)?;
+                                let init_provider: lib::Symbol<
+                                    unsafe extern "C" fn() -> *mut provider::Provider,
+                                > = lib.get(PROVIDER_INIT_FUNCTION)?;
                                 init_provider()
                             };
                             result.push(Provider {
@@ -153,13 +160,10 @@ impl Patronus {
                                 library: Box::into_raw(lib),
                             });
                         }
-                        _ => {
-                            panic!(
-                                "Unsupported provider version {} for provider {:?}",
-                                version,
-                                path
-                            )
-                        }
+                        _ => panic!(
+                            "Unsupported provider version {} for provider {:?}",
+                            version, path
+                        ),
                     }
                 }
             }

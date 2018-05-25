@@ -17,7 +17,8 @@ pub extern "C" fn get_name() -> *const c_char {
 }
 
 fn check_text_english(text: Cow<str>) -> *mut AnnotationArray {
-    let mistakes: Vec<Annotation> = text.match_indices("mistakes are good")
+    let mistakes: Vec<Annotation> = text
+        .match_indices("mistakes are good")
         .map(|(offset, text)| {
             let length = text.len() as usize;
             let suggestions = vec![
@@ -47,9 +48,10 @@ extern "C" fn check_text(
             .into_owned()
     };
     let text = unsafe { CStr::from_ptr(text).to_string_lossy() };
-    let lang = lang_code.splitn(2, '_').nth(0).expect(
-        "not enough language code components",
-    );
+    let lang = lang_code
+        .splitn(2, '_')
+        .nth(0)
+        .expect("not enough language code components");
 
     match lang {
         "en" => check_text_english(text),
@@ -91,7 +93,8 @@ fn test_english_single_mistake() {
 
 #[test]
 fn test_english_multiple_mistakes() {
-    let text = "Hello. It is true that mistakes are good. Mistakes are good, you know, mistakes are good!";
+    let text =
+        "Hello. It is true that mistakes are good. Mistakes are good, you know, mistakes are good!";
     let result = check_text_english(text.into());
     let length = unsafe { (*result).len };
     assert!(length == 2);
