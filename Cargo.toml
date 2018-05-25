@@ -2,10 +2,10 @@
 members = [
     "patronus",
     "patronus-provider",
-    "providers/enchant",
-    "providers/languagetool",
-    "providers/sample",
 ]
 exclude = [
     "bindings",
+    "providers/enchant",
+    "providers/languagetool",
+    "providers/sample",
 ]

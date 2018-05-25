@@ -1,0 +1,11 @@
+[[package]]
+name = "patronus-provider"
+version = "0.1.0"
+
+[[package]]
+name = "patronus-sample"
+version = "0.1.0"
+dependencies = [
+ "patronus-provider 0.1.0",
+]
+
