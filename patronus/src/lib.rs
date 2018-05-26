@@ -6,10 +6,12 @@ pub use patronus_provider::AnnotationKind;
 use std::borrow::Cow;
 use std::ffi::CStr;
 use std::ffi::CString;
+use std::env;
 use std::fs;
 use std::io;
 use std::os::raw::c_int;
 use std::path::Path;
+use std::path::PathBuf;
 
 /// Represents a profile to be passed down to checkers.
 /// Currently only primary language is supported.
@@ -128,42 +130,53 @@ impl Patronus {
         res
     }
 
-    /// Traverses provider directory and tries to load all shared libraries.
-    /// The provider directory is set during compile time from `PATRONUS_PROVIDER_DIR`
-    /// environment variable.
+    /// Traverses provider directories and tries to load all shared libraries.
+    /// The main provider directory is set during compile time from `PATRONUS_PROVIDER_DIR`
+    /// environment variable (/usr/lib/patronus by default).
+    /// Additionally, the directories listed in `PATRONUS_PROVIDER_PATH` at runtime are crawled as well.
     fn load_providers() -> io::Result<Vec<Provider>> {
-        let provider_location = Path::new(env!("PATRONUS_PROVIDER_DIR"));
+        let mut provider_locations = vec![
+            PathBuf::from(env!("PATRONUS_PROVIDER_DIR"))
+        ];
+        if let Some(provider_path) = env::var_os("PATRONUS_PROVIDER_PATH") {
+            for path in env::split_paths(&provider_path) {
+                provider_locations.push(path);
+            }
+        }
+
         let mut result = Vec::new();
-        if provider_location.is_dir() {
-            for entry in fs::read_dir(provider_location)? {
-                let path = entry?.path();
-                if path.is_file() && path.is_dylib() {
-                    let lib = Box::new(lib::Library::new(&path)?);
-                    let version = unsafe {
-                        match lib.get(PROVIDER_VERSION_FUNCTION)
-                            as lib::Result<lib::Symbol<unsafe extern "C" fn() -> c_int>>
-                        {
-                            Ok(get_version) => get_version(),
-                            Err(_) => continue,
+        for location in provider_locations {
+            if location.is_dir() {
+                for entry in fs::read_dir(location)? {
+                    let path = entry?.path();
+                    if path.is_file() && path.is_dylib() {
+                        let lib = Box::new(lib::Library::new(&path)?);
+                        let version = unsafe {
+                            match lib.get(PROVIDER_VERSION_FUNCTION)
+                                as lib::Result<lib::Symbol<unsafe extern "C" fn() -> c_int>>
+                            {
+                                Ok(get_version) => get_version(),
+                                Err(_) => continue,
+                            }
+                        };
+                        match version {
+                            1 => {
+                                let internal_provider = unsafe {
+                                    let init_provider: lib::Symbol<
+                                        unsafe extern "C" fn() -> *mut provider::Provider,
+                                    > = lib.get(PROVIDER_INIT_FUNCTION)?;
+                                    init_provider()
+                                };
+                                result.push(Provider {
+                                    internal: internal_provider,
+                                    library: Box::into_raw(lib),
+                                });
+                            }
+                            _ => panic!(
+                                "Unsupported provider version {} for provider {:?}",
+                                version, path
+                            ),
                         }
-                    };
-                    match version {
-                        1 => {
-                            let internal_provider = unsafe {
-                                let init_provider: lib::Symbol<
-                                    unsafe extern "C" fn() -> *mut provider::Provider,
-                                > = lib.get(PROVIDER_INIT_FUNCTION)?;
-                                init_provider()
-                            };
-                            result.push(Provider {
-                                internal: internal_provider,
-                                library: Box::into_raw(lib),
-                            });
-                        }
-                        _ => panic!(
-                            "Unsupported provider version {} for provider {:?}",
-                            version, path
-                        ),
                     }
                 }
             }
