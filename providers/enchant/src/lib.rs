@@ -33,7 +33,7 @@ extern "C" fn check_text(
     if let Ok(dict) = broker.request_dict(&lang) {
         let words = text.split(|c: char| !c.is_alphabetic());
         for word in words {
-            let length = word.len();
+            let length = word.chars().count();
             if length > 0 {
                 if !dict.check(word).unwrap_or(true) {
                     let suggestions: Vec<Suggestion> = dict
