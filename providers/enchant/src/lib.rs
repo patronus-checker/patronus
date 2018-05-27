@@ -54,8 +54,8 @@ extern "C" fn check_text(
                     };
                     result.push(ann);
                 }
-                offset += length + 1;
             }
+            offset += length + 1;
         }
     }
     Box::into_raw(Box::new(result.into()))
