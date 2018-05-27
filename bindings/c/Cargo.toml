@@ -1,7 +1,7 @@
 [package]
 authors = ["Jan Tojnar <jtojnar@gmail.com>"]
 name = "patronus-capi"
-version = "0.1.0"
+version = "0.1.1"
 
 [dependencies]
 patronus = {path = "../../patronus"}

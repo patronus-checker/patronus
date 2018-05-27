@@ -24,7 +24,7 @@ dependencies = [
 
 [[package]]
 name = "patronus"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "libloading 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "patronus-provider 0.1.0",
@@ -32,9 +32,9 @@ dependencies = [
 
 [[package]]
 name = "patronus-capi"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
- "patronus 0.1.0",
+ "patronus 0.1.1",
  "patronus-provider 0.1.0",
 ]
 
