@@ -4,9 +4,9 @@ extern crate patronus_provider;
 use patronus_provider as provider;
 pub use patronus_provider::AnnotationKind;
 use std::borrow::Cow;
+use std::env;
 use std::ffi::CStr;
 use std::ffi::CString;
-use std::env;
 use std::fs;
 use std::io;
 use std::os::raw::c_int;
@@ -135,9 +135,7 @@ impl Patronus {
     /// environment variable (/usr/lib/patronus by default).
     /// Additionally, the directories listed in `PATRONUS_PROVIDER_PATH` at runtime are crawled as well.
     fn load_providers() -> io::Result<Vec<Provider>> {
-        let mut provider_locations = vec![
-            PathBuf::from(env!("PATRONUS_PROVIDER_DIR"))
-        ];
+        let mut provider_locations = vec![PathBuf::from(env!("PATRONUS_PROVIDER_DIR"))];
         if let Some(provider_path) = env::var_os("PATRONUS_PROVIDER_PATH") {
             for path in env::split_paths(&provider_path) {
                 provider_locations.push(path);
