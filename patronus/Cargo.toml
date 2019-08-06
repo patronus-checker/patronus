@@ -2,8 +2,8 @@
 authors = ["Jan Tojnar <jtojnar@gmail.com>"]
 build = "build.rs"
 name = "patronus"
-version = "0.1.1"
+version = "0.1.2"
 
 [dependencies]
-libloading = "0.4"
+libloading = "0.5"
 patronus-provider = {path = "../patronus-provider"}
