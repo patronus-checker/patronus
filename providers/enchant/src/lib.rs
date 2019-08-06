@@ -1,5 +1,4 @@
 extern crate enchant;
-#[macro_use]
 extern crate patronus_provider;
 
 use enchant::Broker;
