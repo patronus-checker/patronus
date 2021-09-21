@@ -39,10 +39,10 @@ impl<T> From<Vec<T>> for PArray<T> {
 
 impl<T: fmt::Debug> fmt::Debug for PArray<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        try!(write!(f, "["));
+        write!(f, "[")?;
         for i in 0..self.len as isize {
             unsafe {
-                try!(write!(f, "{:?},", self.data.offset(i)));
+                write!(f, "{:?},", self.data.offset(i))?;
             }
         }
         write!(f, "]")
