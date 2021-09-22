@@ -1,5 +1,4 @@
 // Basically #include <patronus/patronus-provider.h>
-#[macro_use]
 extern crate patronus_provider;
 
 // Import some names into the scope so we do not have to type
