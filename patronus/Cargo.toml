@@ -5,5 +5,5 @@ name = "patronus"
 version = "0.1.2"
 
 [dependencies]
-libloading = "0.5"
+libloading = "0.7"
 patronus-provider = {path = "../patronus-provider"}

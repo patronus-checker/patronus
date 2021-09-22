@@ -1,6 +1,7 @@
 extern crate libloading as lib;
 extern crate patronus_provider;
 
+use self::error::Error;
 use patronus_provider as provider;
 pub use patronus_provider::AnnotationKind;
 use std::borrow::Cow;
@@ -8,10 +9,11 @@ use std::env;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::fs;
-use std::io;
 use std::os::raw::c_int;
 use std::path::Path;
 use std::path::PathBuf;
+
+mod error;
 
 /// Represents a profile to be passed down to checkers.
 /// Currently only primary language is supported.
@@ -134,7 +136,7 @@ impl Patronus {
     /// The main provider directory is set during compile time from `PATRONUS_PROVIDER_DIR`
     /// environment variable (/usr/lib/patronus by default).
     /// Additionally, the directories listed in `PATRONUS_PROVIDER_PATH` at runtime are crawled as well.
-    fn load_providers() -> io::Result<Vec<Provider>> {
+    fn load_providers() -> Result<Vec<Provider>, Error> {
         let mut provider_locations = vec![PathBuf::from(env!("PATRONUS_PROVIDER_DIR"))];
         if let Some(provider_path) = env::var_os("PATRONUS_PROVIDER_PATH") {
             for path in env::split_paths(&provider_path) {
@@ -145,13 +147,16 @@ impl Patronus {
         let mut result = Vec::new();
         for location in provider_locations {
             if location.is_dir() {
-                for entry in fs::read_dir(location)? {
-                    let path = entry?.path();
+                for entry in fs::read_dir(location).map_err(|source| Error::IoError { source })? {
+                    let path = entry.map_err(|source| Error::IoError { source })?.path();
                     if path.is_file() && path.is_dylib() {
-                        let lib = Box::new(lib::Library::new(&path)?);
+                        let lib = Box::new(unsafe {
+                            lib::Library::new(&path)
+                                .map_err(|source| Error::LibloadingError { source })?
+                        });
                         let version = unsafe {
                             match lib.get(PROVIDER_VERSION_FUNCTION)
-                                as lib::Result<lib::Symbol<unsafe extern "C" fn() -> c_int>>
+                                as Result<lib::Symbol<unsafe extern "C" fn() -> c_int>, lib::Error>
                             {
                                 Ok(get_version) => get_version(),
                                 Err(_) => continue,
@@ -162,7 +167,9 @@ impl Patronus {
                                 let internal_provider = unsafe {
                                     let init_provider: lib::Symbol<
                                         unsafe extern "C" fn() -> *mut provider::Provider,
-                                    > = lib.get(PROVIDER_INIT_FUNCTION)?;
+                                    > = lib
+                                        .get(PROVIDER_INIT_FUNCTION)
+                                        .map_err(|source| Error::LibloadingError { source })?;
                                     init_provider()
                                 };
                                 result.push(Provider {
