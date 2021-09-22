@@ -1,6 +1,5 @@
 extern crate config;
 extern crate languagetool;
-#[macro_use]
 extern crate patronus_provider;
 extern crate xdg;
 
