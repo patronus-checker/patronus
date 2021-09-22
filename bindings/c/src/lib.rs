@@ -5,12 +5,7 @@ pub use patronus_provider::{Annotation, AnnotationArray, Properties, Suggestion}
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 
-// TODO: cbindgen needs to support opaque structs
-// https://github.com/eqrion/cbindgen/issues/104
-// or respect visibility
-// https://github.com/eqrion/cbindgen/issues/123
 /// Opaque wrapper for `Patronus` struct.
-#[no_mangle]
 pub enum Patronus {}
 
 /// Creates an instance of `Patronus` checker.
