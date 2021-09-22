@@ -20,7 +20,7 @@ dependencies = [
 
 [[package]]
 name = "patronus"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "libloading",
  "patronus-provider",
@@ -28,7 +28,7 @@ dependencies = [
 
 [[package]]
 name = "patronus-capi"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "patronus",
  "patronus-provider",
